@@ -1,7 +1,7 @@
 'use client';
 import dynamic from 'next/dynamic';
 import { useEffect, useState, useRef } from "react";
-import { Box,IconButton } from '@mui/material';
+import { Box,IconButton,Slider } from '@mui/material';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import CachedIcon from '@mui/icons-material/Cached';
 import ParkingLot from './parking-lot';
@@ -12,12 +12,13 @@ const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapCo
 const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
 const LayersControl = dynamic(() => import("react-leaflet").then(mod => mod.LayersControl), { ssr: false });
 const LOverlay = dynamic(() => import("react-leaflet").then(mod => mod.LayersControl.Overlay), { ssr: false });
-//const Circle = dynamic(() => import("react-leaflet").then(mod => mod.Circle), { ssr: false });
+const Circle = dynamic(() => import("react-leaflet").then(mod => mod.Circle), { ssr: false });
 const LayerGroup = dynamic(() => import("react-leaflet").then(mod => mod.LayerGroup), { ssr: false });
 
 export default function Home() {
   const mapRef = useRef(null);
   const [curLoc, setCurLoc] = useState([24.801781, 120.972553]);
+  const [dis, setDis] = useState(500);
 
   useEffect(() => {
     // Dynamically import leaflet and fix the default icon issue
@@ -53,6 +54,10 @@ export default function Home() {
     }
   }
 
+  const handleDistanceChange = (event, value) => {
+    setDis(value*10);
+  }
+
   return (
     <div>
       <main>
@@ -64,7 +69,12 @@ export default function Home() {
           <LayersControl position="topright">
             <LOverlay checked name="Parking Lots">
               <LayerGroup>
-                <ParkingLot lat={curLoc[0]} lon={curLoc[1]} dis={500} />
+                <ParkingLot lat={curLoc[0]} lon={curLoc[1]} dis={dis} />
+              </LayerGroup>
+            </LOverlay>
+            <LOverlay checked name="Circle">
+              <LayerGroup>
+                <Circle center={curLoc} radius={dis} />
               </LayerGroup>
             </LOverlay>
           </LayersControl>
@@ -76,6 +86,13 @@ export default function Home() {
           <IconButton aria-label="refresh" color="primary" size="large" onClick={handleRefreshLocation}>
             <CachedIcon fontSize='inherit'/>
           </IconButton>
+          <Slider
+            aria-label="distance"
+            value={dis/10}
+            step={10}
+            valueLabelDisplay="auto"
+            onChange={handleDistanceChange}
+          />
         </Box>
       </main>
     </div>

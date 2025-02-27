@@ -2,11 +2,11 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
 const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ssr: false });
 
 export default function ParkingLot({lat, lon, dis}) {
-  const [res, setRes] = useState(null);
+  const [res, setRes] = useState([]);
   const [error, setError] = useState(null);
-  const [coords, setCoords] = useState([]);
   const [prevLoc, setPrevLoc] = useState([]);
 
   useEffect(() => {
@@ -24,15 +24,9 @@ export default function ParkingLot({lat, lon, dis}) {
         setError(err.message);
       }
     };
-    if (!res || prevLoc[0] !== lat || prevLoc[1] !== lon)
+    if (res.length === 0 || prevLoc[0] !== lat || prevLoc[1] !== lon)
         fetchParkingLots();
   }, [lat,lon,dis]);
-
-  useEffect(() => {
-    if (res) {
-        setCoords(res.map((lot) => lot.CarParkPosition));
-    }
-  }, [res]);
 
   if (error) {
     console.error(error);
@@ -41,8 +35,17 @@ export default function ParkingLot({lat, lon, dis}) {
 
   return (
     <>
-      {coords.map((coord, index) => (
-        <Marker key={index} position={[coord.PositionLat, coord.PositionLon]} />
+      {res.map((park, index) => (
+        <Marker key={index} position={[park.CarParkPosition.PositionLat, park.CarParkPosition.PositionLon]}>
+          <Popup>
+            <div>
+              <h2>{park.CarParkName.Zh_tw}</h2>
+              <p>{park.Address}</p>
+              <p>{park.Description}</p>
+              <p>{park.FareDescription}</p>
+            </div>
+          </Popup>
+        </Marker>
       ))}
     </>
   );
