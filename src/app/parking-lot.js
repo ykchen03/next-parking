@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { IconButton } from "@mui/material";
+import { Button } from "@mui/material";
 import NearMeIcon from "@mui/icons-material/NearMe";
 
 const Marker = dynamic(
@@ -16,6 +16,66 @@ export default function ParkingLot({ u_lat, u_lon, m_dis }) {
   const [neonData, setNeonData] = useState([]);
   const [error, setError] = useState(null);
   const [prev, setPrev] = useState(null);
+  
+  const [greenDot, setGreenDot] = useState(null);
+  const [yellowDot, setYellowDot] = useState(null);
+  const [orangeDot, setOrangeDot] = useState(null);
+  const [redDot, setRedDot] = useState(null);
+  const [greyDot, setGreyDot] = useState(null);
+
+  useEffect(() => {
+    const L = require("leaflet");
+    setGreenDot(
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/refs/heads/master/img/marker-icon-green.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      })
+    );
+    setYellowDot(
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/refs/heads/master/img/marker-icon-yellow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      })
+    );
+    setOrangeDot(
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/refs/heads/master/img/marker-icon-orange.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      })
+    );
+    setRedDot(
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/refs/heads/master/img/marker-icon-red.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      })
+    );
+    setGreyDot(
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/refs/heads/master/img/marker-icon-grey.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      })
+    );
+  },[]);
 
   useEffect(() => {
     const fetchParkingLots = async () => {
@@ -26,7 +86,6 @@ export default function ParkingLot({ u_lat, u_lon, m_dis }) {
         }
         const park_data = await response_park.json();
         setParkData(park_data);
-        //console.log(park_data);
 
         if (
           u_lat === prev?.u_lat &&
@@ -44,7 +103,6 @@ export default function ParkingLot({ u_lat, u_lon, m_dis }) {
         }
         const neon_data = await response_neon.json();
         setNeonData(neon_data);
-        //console.log(neon_data);
 
         setPrev({ u_lat, u_lon, m_dis });
       } catch (err) {
@@ -65,8 +123,20 @@ export default function ParkingLot({ u_lat, u_lon, m_dis }) {
     <>
       {neonData.map((park, index) => {
         const lot = parkData.find((p) => p.PARKNO === park.name);
+        const icon = () => {
+          if (lot.TOTALQUANTITY === 0) 
+            return greyDot;
+          else if (lot.FREEQUANTITY / lot.TOTALQUANTITY > 0.75)
+            return redDot;
+          else if (lot.FREEQUANTITY / lot.TOTALQUANTITY > 0.5)
+            return orangeDot;
+          else if (lot.FREEQUANTITY / lot.TOTALQUANTITY > 0.25)
+            return yellowDot;
+          else
+            return greenDot;
+        };
         return (
-          <Marker key={index} position={[lot.LATITUDE, lot.LONGITUDE]}>
+          <Marker key={index} position={[lot.LATITUDE, lot.LONGITUDE]} icon={icon()}>
             <Popup>
               <div>
                 <h2>{lot.PARKINGNAME}</h2>
@@ -76,14 +146,15 @@ export default function ParkingLot({ u_lat, u_lon, m_dis }) {
                 <p>
                   剩餘車位🅿️:{lot.FREEQUANTITY}/{lot.TOTALQUANTITY}
                 </p>
-                <IconButton
+                <Button
                   color="primary"
                   aria-label="google-map-route"
                   href={`https://www.google.com/maps/dir/?api=1&destination=${lot.LATITUDE},${lot.LONGITUDE}`}
                   target="_blank"
+                  startIcon={<NearMeIcon />}
                 >
-                  <NearMeIcon />
-                </IconButton>
+                  路線
+                </Button>
               </div>
             </Popup>
           </Marker>
