@@ -4,17 +4,28 @@ import { useMapEvent } from "react-leaflet";
 import { useEffect, useState, useRef } from "react";
 import {
   Box,
-  IconButton,
+  Fab,
   Slider,
   Radio,
   RadioGroup,
   FormControl,
   FormControlLabel,
 } from "@mui/material";
+import { BarChart } from '@mui/x-charts'
 import NavigationIcon from "@mui/icons-material/Navigation";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
+/*import {
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";*/
 import ParkingLot from "./parking-lot";
 import "leaflet/dist/leaflet.css";
+import { Colorize } from "@mui/icons-material";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -69,7 +80,10 @@ export default function Home() {
 
   const GetCenter = () => {
     const map = useMapEvent("moveend", () => {
-      setMapCenter(map.getCenter());
+      const newCenter = map.getCenter();
+      if (newCenter.lat !== mapCenter.lat || newCenter.lng !== mapCenter.lng) {
+        setMapCenter([newCenter.lat, newCenter.lng]);
+      }
     });
     return null;
   };
@@ -107,7 +121,7 @@ export default function Home() {
       <main>
         <MapContainer
           center={[24.806805602144337, 120.9690507271121]}
-          zoom={13}
+          zoom={15}
           style={{ height: "100vh", width: "100%" }}
           ref={mapRef}
         >
@@ -128,15 +142,24 @@ export default function Home() {
               <LayerGroup>
                 {showPark && (
                   <>
-                    <ParkingLot u_lat={curLoc[0]} u_lon={curLoc[1]} m_dis={dis} />
-                    <Circle center={curLoc} radius={dis} pathOptions={{fillColor: "yellow"}} stroke={false}/>
+                    <ParkingLot
+                      u_lat={curLoc[0]}
+                      u_lon={curLoc[1]}
+                      m_dis={dis}
+                    />
+                    <Circle
+                      center={curLoc}
+                      radius={dis}
+                      pathOptions={{ fillColor: "yellow" }}
+                      stroke={false}
+                    />
                   </>
                 )}
               </LayerGroup>
             </LOverlay>
             <LOverlay checked name="Circle">
               <LayerGroup>
-                <Circle center={mapCenter} radius={dis} />
+                <Circle center={mapCenter} radius={dis} fill={false} />
               </LayerGroup>
             </LOverlay>
             <LOverlay checked name="Center">
@@ -147,34 +170,77 @@ export default function Home() {
           </LayersControl>
         </MapContainer>
         <Box
-          sx={{ position: "absolute", bottom: 0, right: 0, m: 2, zIndex: 1000 }}
+          sx={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            m: 2,
+            padding: 1,
+            '& > :not(style)': { m: 1 },
+            zIndex: 1000,
+            borderRadius: 5,
+          }}
         >
-          <IconButton
+          <Fab
             aria-label="fly"
-            color="primary"
-            size="large"
+            color="success"
             onClick={handleFlyToLocation}
           >
-            <NavigationIcon fontSize="inherit" />
-          </IconButton>
-          <IconButton
+            <NavigationIcon/>
+          </Fab>
+          <Fab
             aria-label="find"
             color="primary"
-            size="large"
             onClick={handleFindPark}
           >
-            <LocalParkingIcon fontSize="inherit" />
-          </IconButton>
-          <Slider
-            aria-label="distance"
-            value={dis / 10}
-            step={10}
-            valueLabelDisplay="auto"
-            onChange={handleDistanceChange}
-          />
+            <LocalParkingIcon/>
+          </Fab>
         </Box>
         <Box
-          sx={{ position: "absolute", bottom: 0, left: 0, m: 2, zIndex: 1000 }}
+          width="25%"
+          sx={{
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            m: 2,
+            padding: 2,
+            zIndex: 1000,
+            backdropFilter: "blur(10px)",
+            borderRadius: 5,
+          }}>
+          <Slider
+              aria-label="distance"
+              value={dis / 10}
+              step={5}
+              scale={(x) => `${x * 10}m`}
+              valueLabelDisplay="auto"
+              onChange={handleDistanceChange}
+              marks={[
+                { value: 0, label: "0m" },
+                { value: 25, label: "250m" },
+                { value: 50, label: "500m" },
+                { value: 75, label: "750m" },
+                { value: 100, label: "1km" }
+              ]}
+              sx={{ '& .MuiSlider-markLabel': {
+                color: layer === "osm" ? "black" : "white" 
+              } }}
+            />
+        </Box>
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            m: 2,
+            padding: 1,
+            zIndex: 1000,
+            color: layer === "osm" ? "black" : "white",
+            backdropFilter: "blur(10px)",
+            borderRadius: 5,
+          }}
         >
           <FormControl component="fieldset">
             <RadioGroup
@@ -194,6 +260,38 @@ export default function Home() {
               />
             </RadioGroup>
           </FormControl>
+        </Box>
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            zIndex: 1000,
+            //backdropFilter: "blur(10px)",
+            borderRadius: 5,
+          }}
+        >
+          <BarChart
+            xAxis={[
+              {
+                valueFormatter: (v, c) => {
+                  return `${v}%`;
+                },
+                tickInterval: [0, 25, 50, 75, 100],
+              },
+            ]}
+            yAxis={[{ scaleType: "band", data: ["額滿率"], }]}
+            series={[
+              { data: [25], stack: "a", color: "#2AAD27" },
+              { data: [25], stack: "a", color: "#CAC428" },
+              { data: [25], stack: "a", color: "#CB8427" },
+              { data: [25], stack: "a", color: "#CB2B3E" },
+            ]}
+            width={500}
+            height={120}
+            layout="horizontal"
+            sx={{ "& .MuiChartsAxis-tickLabel": { fill: layer === "osm" ? "black" : "white" }, }}
+          />
         </Box>
       </main>
     </div>
