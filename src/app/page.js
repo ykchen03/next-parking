@@ -6,26 +6,20 @@ import {
   Box,
   Fab,
   Slider,
-  Radio,
-  RadioGroup,
-  FormControl,
-  FormControlLabel,
+  BottomNavigation,
+  BottomNavigationAction,
+  Drawer,
+  IconButton,
 } from "@mui/material";
-import { BarChart } from '@mui/x-charts'
+import { BarChart } from "@mui/x-charts";
 import NavigationIcon from "@mui/icons-material/Navigation";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
-/*import {
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";*/
+import SatelliteAltIcon from "@mui/icons-material/SatelliteAlt";
+import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
+import MapIcon from "@mui/icons-material/Map";
 import ParkingLot from "./parking-lot";
+import ClearIcon from "@mui/icons-material/Clear";
 import "leaflet/dist/leaflet.css";
-import { Colorize } from "@mui/icons-material";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -65,6 +59,7 @@ export default function Home() {
   const [layer, setLayer] = useState("osm");
   const [dis, setDis] = useState(500);
   const [showPark, setShowPark] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
     const L = require("leaflet");
@@ -176,40 +171,67 @@ export default function Home() {
             right: 0,
             m: 2,
             padding: 1,
-            '& > :not(style)': { m: 1 },
+            "& > :not(style)": { m: 1 },
             zIndex: 1000,
             borderRadius: 5,
           }}
         >
-          <Fab
-            aria-label="fly"
-            color="success"
-            onClick={handleFlyToLocation}
-          >
-            <NavigationIcon/>
+          <Fab aria-label="fly" color="success" onClick={handleFlyToLocation}>
+            <NavigationIcon />
           </Fab>
-          <Fab
-            aria-label="find"
-            color="primary"
-            onClick={handleFindPark}
-          >
-            <LocalParkingIcon/>
+          <Fab aria-label="find" color="primary" onClick={handleFindPark}>
+            <LocalParkingIcon />
           </Fab>
         </Box>
         <Box
-          width="25%"
           sx={{
             position: "absolute",
             bottom: 0,
             left: "50%",
             transform: "translateX(-50%)",
             m: 2,
-            padding: 2,
+            padding: 1,
             zIndex: 1000,
-            backdropFilter: "blur(10px)",
-            borderRadius: 5,
-          }}>
-          <Slider
+            //backdropFilter: "blur(10px)",
+            //borderRadius: 5,
+          }}
+        >
+          <Fab
+            color="secondary"
+            aria-label="range"
+            onClick={() => setOpenDrawer(true)}
+          >
+            <PanoramaFishEyeIcon />
+          </Fab>
+        </Box>
+        <Drawer
+          open={openDrawer}
+          onClose={() => setOpenDrawer(false)}
+          anchor="bottom"
+          slotProps={{
+            paper: {
+              sx: { backdropFilter: "blur(10px)", backgroundColor: "unset" },
+            },
+            backdrop: { sx: { backgroundColor: "unset" } },
+          }}
+        >
+          <IconButton
+            color="error"
+            aria-label="back"
+            size="large"
+            sx={{ alignSelf: "flex-end" }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            <ClearIcon />
+          </IconButton>
+          <Box
+            width="25%"
+            sx={{
+              m: 2,
+              alignSelf: "center",
+            }}
+          >
+            <Slider
               aria-label="distance"
               value={dis / 10}
               step={5}
@@ -221,13 +243,16 @@ export default function Home() {
                 { value: 25, label: "250m" },
                 { value: 50, label: "500m" },
                 { value: 75, label: "750m" },
-                { value: 100, label: "1km" }
+                { value: 100, label: "1km" },
               ]}
-              sx={{ '& .MuiSlider-markLabel': {
-                color: layer === "osm" ? "black" : "white" 
-              } }}
+              sx={{
+                "& .MuiSlider-markLabel": {
+                  color: layer === "osm" ? "black" : "white",
+                },
+              }}
             />
-        </Box>
+          </Box>
+        </Drawer>
         <Box
           sx={{
             position: "absolute",
@@ -235,31 +260,35 @@ export default function Home() {
             left: "50%",
             transform: "translateX(-50%)",
             m: 2,
-            padding: 1,
             zIndex: 1000,
-            color: layer === "osm" ? "black" : "white",
-            backdropFilter: "blur(10px)",
-            borderRadius: 5,
           }}
         >
-          <FormControl component="fieldset">
-            <RadioGroup
-              row
-              aria-label
-              name="layer"
-              defaultValue="osm"
-              onChange={(event) => {
-                setLayer(event.target.value);
-              }}
-            >
-              <FormControlLabel value="osm" control={<Radio />} label="OSM" />
-              <FormControlLabel
-                value="satellite"
-                control={<Radio />}
-                label="Satellite"
-              />
-            </RadioGroup>
-          </FormControl>
+          <BottomNavigation
+            showLabels
+            value={layer}
+            onChange={(event, newValue) => {
+              setLayer(newValue);
+            }}
+            sx={{
+              borderRadius: 5,
+              backgroundColor: "unset",
+              backdropFilter: "blur(10px)",
+              "& .MuiBottomNavigationAction-root:not(.Mui-selected)": {
+                color: layer === "osm" ? "black" : "white",
+              },
+            }}
+          >
+            <BottomNavigationAction
+              value="osm"
+              icon={<MapIcon />}
+              label="OSM"
+            />
+            <BottomNavigationAction
+              value="satellite"
+              icon={<SatelliteAltIcon />}
+              label="Satellite"
+            />
+          </BottomNavigation>
         </Box>
         <Box
           sx={{
@@ -267,7 +296,6 @@ export default function Home() {
             bottom: 0,
             left: 0,
             zIndex: 1000,
-            //backdropFilter: "blur(10px)",
             borderRadius: 5,
           }}
         >
@@ -280,7 +308,7 @@ export default function Home() {
                 tickInterval: [0, 25, 50, 75, 100],
               },
             ]}
-            yAxis={[{ scaleType: "band", data: ["額滿率"], }]}
+            yAxis={[{ scaleType: "band", data: ["額滿率"] }]}
             series={[
               { data: [25], stack: "a", color: "#2AAD27" },
               { data: [25], stack: "a", color: "#CAC428" },
@@ -290,7 +318,11 @@ export default function Home() {
             width={500}
             height={120}
             layout="horizontal"
-            sx={{ "& .MuiChartsAxis-tickLabel": { fill: layer === "osm" ? "black" : "white" }, }}
+            sx={{
+              "& .MuiChartsAxis-tickLabel": {
+                fill: layer === "osm" ? "black" : "white",
+              },
+            }}
           />
         </Box>
       </main>
