@@ -21,14 +21,12 @@ export default async function handler(req, res) {
 
   try {
     const data = await sql`
-    SELECT name
-    FROM parking_lots 
-    WHERE ST_DWithin(
-      location,
-      ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-      ${searchRadius}
-    );
-  `;
+    SELECT name, distance
+    FROM ( SELECT name,
+            ST_Distance(location,ST_SetSRID(ST_MakePoint(${lon},${lat}), 4326)::geography)
+            AS distance FROM parking_lots) AS subquery
+    WHERE distance <= ${radius};
+    `;
     return res.status(200).json(data);
   } catch (error) {
     return res.json({ error: error.message }, { status: 500 });
