@@ -357,13 +357,7 @@ export default function Home() {
           </BottomNavigation>
         </Box>
         <Box
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            zIndex: 1000,
-            borderRadius: 5,
-          }}
+          className="absolute bottom-0 left-0 z-400"
         >
           <BarChart
             xAxis={[
