@@ -25,7 +25,7 @@ export default function findBestParkingLot(parkingLots, preferences = {}) {
     const maxPrice = Math.max(...filteredLots.map(l => l.price));
     const scoredLots = filteredLots.map(lot => {
       const priceScore = maxPrice === 0 ? 1 : 1 - (lot.price / maxPrice);
-      const fullRateScore = lot.fullRate;
+      const fullRateScore = 1 - lot.fullRate;
       const distanceScore = 1 - (lot.distance / 1000);
       
       const totalScore = 
