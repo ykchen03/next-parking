@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,16 +13,14 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.4.6",
-    "@mui/styled-engine-sc": "^6.4.6",
     "@mui/x-charts": "^7.27.1",
     "@neondatabase/serverless": "^0.10.4",
     "@tanstack/react-query": "^5.68.0",
     "leaflet": "^1.9.4",
-    "next": "^15.2.1",
+    "next": "^15.2.2",
     "react": "^19.0.0-rc.1",
     "react-dom": "^19.0.0-rc.1",
-    "react-leaflet": "^5.0.0-rc.2",
-    "styled-components": "^6.1.15"
+    "react-leaflet": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
