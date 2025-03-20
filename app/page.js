@@ -13,15 +13,15 @@ import {
   ToggleButton,
 } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import SatelliteAltIcon from "@mui/icons-material/SatelliteAlt";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 import MapIcon from "@mui/icons-material/Map";
 import ClearIcon from "@mui/icons-material/Clear";
-import PowerIcon from '@mui/icons-material/Power';
-import PowerOffIcon from '@mui/icons-material/PowerOff';
-import AssistantIcon from '@mui/icons-material/Assistant';
+import PowerIcon from "@mui/icons-material/Power";
+import PowerOffIcon from "@mui/icons-material/PowerOff";
+import AssistantIcon from "@mui/icons-material/Assistant";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ParkingLot from "./parking_hc";
 import "leaflet/dist/leaflet.css";
@@ -54,10 +54,9 @@ const Marker = dynamic(
   () => import("react-leaflet").then((mod) => mod.Marker),
   { ssr: false }
 );
-const Popup = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Popup),
-  { ssr: false }
-);
+const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
+  ssr: false,
+});
 const GeoJSON = dynamic(
   () => import("react-leaflet").then((mod) => mod.GeoJSON),
   { ssr: false }
@@ -66,7 +65,9 @@ const queryClient = new QueryClient();
 
 export default function Home() {
   const mapRef = useRef(null);
-  const [Target_find, setTarget_find] = useState([24.806805602144337, 120.9690507271121]);
+  const [Target_find, setTarget_find] = useState([
+    24.806805602144337, 120.9690507271121,
+  ]);
   const [Target_render, setTarget_render] = useState([
     24.806805602144337, 120.9690507271121,
   ]);
@@ -86,7 +87,7 @@ export default function Home() {
   useEffect(() => {
     const L = require("leaflet");
     setTargetIcon(
-        L.icon({
+      L.icon({
         iconUrl: "icon/target.svg",
         iconSize: [25, 25],
         iconAnchor: [12, 12],
@@ -100,10 +101,10 @@ export default function Home() {
       })
     );
     fetch("boundary/hsinchu.geojson")
-    .then((res) => res.json())
-    .then((data) => {
-      setGeoJsonData(data);
-    });
+      .then((res) => res.json())
+      .then((data) => {
+        setGeoJsonData(data);
+      });
   }, []);
 
   const TargetMarker = () => {
@@ -114,19 +115,30 @@ export default function Home() {
     const eventHandlers = useMemo(
       () => ({
         dragend() {
-          const marker = markerRef.current
+          const marker = markerRef.current;
           if (marker) {
-            setTarget_render(marker.getLatLng())
+            setTarget_render(marker.getLatLng());
           }
         },
       }),
-      [],
+      []
     );
     return (
       <>
-      <Marker icon={TargetIcon} position={Target_render} eventHandlers={eventHandlers} ref={markerRef} draggable={true}>
-        <Circle center={Target_render} radius={dis_render} pathOptions={{ fillColor: "blue" }} fill={false}/>
-      </Marker>
+        <Marker
+          icon={TargetIcon}
+          position={Target_render}
+          eventHandlers={eventHandlers}
+          ref={markerRef}
+          draggable={true}
+        >
+          <Circle
+            center={Target_render}
+            radius={dis_render}
+            pathOptions={{ fillColor: "blue" }}
+            fill={false}
+          />
+        </Marker>
       </>
     );
   };
@@ -211,10 +223,7 @@ export default function Home() {
             <LOverlay checked name="GPS">
               <LayerGroup>
                 {Gps && (
-                  <Marker
-                    position={Gps}
-                    icon={GpsIcon}
-                  >
+                  <Marker position={Gps} icon={GpsIcon}>
                     <Popup autoPan={false}>
                       <div>
                         <h2>Your Location</h2>
@@ -228,7 +237,12 @@ export default function Home() {
             </LOverlay>
             <LOverlay checked name="Boundary">
               <LayerGroup>
-                {geoJsonData && <GeoJSON data={geoJsonData} style={{fill: false, dashArray: [4]}}/>}
+                {geoJsonData && (
+                  <GeoJSON
+                    data={geoJsonData}
+                    style={{ fill: false, dashArray: [4] }}
+                  />
+                )}
               </LayerGroup>
             </LOverlay>
           </LayersControl>
@@ -265,18 +279,15 @@ export default function Home() {
           }}
         >
           <IconButton
+            className="self-end"
             color="error"
             aria-label="back"
             size="large"
-            sx={{ alignSelf: "flex-end" }}
             onClick={() => setOpenDrawer(false)}
           >
             <ClearIcon />
           </IconButton>
-          <Box
-            className="m-2 self-center"
-            width="25%"
-          >
+          <Box className="m-2 self-center" width="25%">
             <Slider
               aria-label="distance"
               value={dis_render / 10}
@@ -300,46 +311,41 @@ export default function Home() {
           </Box>
         </Drawer>
         <Box
-          className="absolute bottom-0 left-1/2 m-2 p-1 z-400"
+          className="absolute bottom-0 left-1/2 transform-gpu -translate-x-1/2 m-2 p-1 z-400"
           sx={{
-            transform: "translateX(-50%)",
             "& > :not(style)": { m: 1 },
           }}
         >
-        <ToggleButton
-          color="warning"
-          aria-label="recharge"
-          value="check"
-          selected={needRecharge}
-          onClick={() => setNeedRecharge((prev) => !prev)}
-          sx={{ backdropFilter: "blur(10px)"}}
-        >
-          {needRecharge ? <PowerIcon /> : <PowerOffIcon />}
-        </ToggleButton>
-        <Fab
-          color="error"
-          aria-label="find"
-          onClick={() => setFindBest((prev) => !prev)}
-        >
-          <AssistantIcon />
-        </Fab>
+          <ToggleButton
+            className="backdrop-filter backdrop-blur"
+            color="warning"
+            aria-label="recharge"
+            value="check"
+            selected={needRecharge}
+            onClick={() => setNeedRecharge((prev) => !prev)}
+          >
+            {needRecharge ? <PowerIcon /> : <PowerOffIcon />}
+          </ToggleButton>
+          <Fab
+            color="error"
+            aria-label="find"
+            onClick={() => setFindBest((prev) => !prev)}
+          >
+            <AssistantIcon />
+          </Fab>
         </Box>
         <Box
-          className="absolute top-0 left-1/2 z-400 m-2"
-          sx={{
-            transform: "translateX(-50%)",
-          }}
+          className="absolute top-0 left-1/2 transform-gpu -translate-x-1/2 z-400 m-2"
         >
           <BottomNavigation
+            className="backdrop-filter backdrop-blur rounded-sm"
             showLabels
             value={layer}
             onChange={(event, newValue) => {
               setLayer(newValue);
             }}
             sx={{
-              borderRadius: 5,
               backgroundColor: "unset",
-              backdropFilter: "blur(10px)",
               "& .MuiBottomNavigationAction-root:not(.Mui-selected)": {
                 color: layer === "osm" ? "black" : "white",
               },
@@ -357,9 +363,7 @@ export default function Home() {
             />
           </BottomNavigation>
         </Box>
-        <Box
-          className="absolute bottom-0 left-0 z-400"
-        >
+        <Box className="absolute bottom-0 left-0 z-400">
           <BarChart
             xAxis={[
               {
