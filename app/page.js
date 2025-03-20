@@ -16,7 +16,7 @@ import { BarChart } from "@mui/x-charts";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import SatelliteAltIcon from "@mui/icons-material/SatelliteAlt";
-import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
+import TrackChangesIcon from '@mui/icons-material/TrackChanges';
 import MapIcon from "@mui/icons-material/Map";
 import ClearIcon from "@mui/icons-material/Clear";
 import PowerIcon from "@mui/icons-material/Power";
@@ -258,7 +258,7 @@ export default function Home() {
             aria-label="range"
             onClick={() => setOpenDrawer(true)}
           >
-            <PanoramaFishEyeIcon />
+            <TrackChangesIcon />
           </Fab>
           <Fab aria-label="fly" color="success" onClick={handleFlyToLocation}>
             <GpsFixedIcon />
