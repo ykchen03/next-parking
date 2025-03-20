@@ -123,8 +123,8 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         return neonData;
       }
       console.log('fetchNeon',target,Date().toLocaleString());
-      //const res = await fetch(`/api/neon?lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
-      const res = await fetch("neon_test.json");
+      const res = await fetch(`/api/neon?lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
+      //const res = await fetch("neon_test.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
       return res.json();
@@ -200,7 +200,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
           >
             <Popup autoPan={false}>
               <div>
-                <h2>{lot.PARKINGNAME}{pData.recharge && '⚡'}</h2>
+                <h2 className="text-2xl font-bold">{lot.PARKINGNAME}{pData.recharge && '⚡'}</h2>
                 <p>{lot.ADDRESS}</p>
                 <p>費率💵:${pData.price}/H</p>
                 <p>營業時間🕒:{lot.BUSINESSHOURS}</p>

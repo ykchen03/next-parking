@@ -72,6 +72,7 @@ export default function Home() {
   ]);
   const [Gps, setGps] = useState(null);
   const [GpsIcon, setGpsIcon] = useState(null);
+  const [TargetIcon, setTargetIcon] = useState(null);
   const [layer, setLayer] = useState("osm");
   const [dis_render, setDis_render] = useState(500);
   const [dis_find, setDis_find] = useState(500);
@@ -84,13 +85,13 @@ export default function Home() {
 
   useEffect(() => {
     const L = require("leaflet");
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconUrl: "icon/target.svg",//"https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      iconSize: [25, 25],
-      iconAnchor: [12, 12],
-      shadowUrl: "",
-    });
+    setTargetIcon(
+        L.icon({
+        iconUrl: "icon/target.svg",
+        iconSize: [25, 25],
+        iconAnchor: [12, 12],
+      })
+    );
     setGpsIcon(
       L.icon({
         iconUrl: "icon/flag.svg",
@@ -123,7 +124,7 @@ export default function Home() {
     );
     return (
       <>
-      <Marker position={Target_render} eventHandlers={eventHandlers} ref={markerRef} draggable={true}>
+      <Marker icon={TargetIcon} position={Target_render} eventHandlers={eventHandlers} ref={markerRef} draggable={true}>
         <Circle center={Target_render} radius={dis_render} pathOptions={{ fillColor: "blue" }} fill={false}/>
       </Marker>
       </>
