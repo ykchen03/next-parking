@@ -34,10 +34,12 @@ export default function findBestParkingLot(parkingLots, preferences = {}) {
       
       return {
         id: lot.id,
+        name: lot.name,
         score: totalScore,
         scoreDetails: {
           priceScore,
           fullRateScore,
+          distanceScore,
         }
       };
     });
