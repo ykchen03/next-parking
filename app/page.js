@@ -12,7 +12,6 @@ import {
   IconButton,
   ToggleButton,
 } from "@mui/material";
-import { BarChart } from "@mui/x-charts";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import SatelliteAltIcon from "@mui/icons-material/SatelliteAlt";
@@ -23,7 +22,8 @@ import PowerIcon from "@mui/icons-material/Power";
 import PowerOffIcon from "@mui/icons-material/PowerOff";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ParkingLot from "./parking_hc";
+import ParkingLot from "./components/parking_hc";
+import ParkingDataGrid from "./components/parking_DataGrid";
 import "leaflet/dist/leaflet.css";
 
 const MapContainer = dynamic(
@@ -83,6 +83,7 @@ export default function Home() {
   const [needRecharge, setNeedRecharge] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [findBest, setFindBest] = useState(false);
+  const [bestData, setBestData] = useState(null);
 
   useEffect(() => {
     const L = require("leaflet");
@@ -106,6 +107,10 @@ export default function Home() {
         setGeoJsonData(data);
       });
   }, []);
+
+  useEffect(() => {
+    console.log("bestData updated:", bestData);
+  }, [bestData]);
 
   const TargetMarker = () => {
     useMapEvent("click", (e) => {
@@ -203,6 +208,7 @@ export default function Home() {
                         needRecharge={needRecharge}
                         refresh={refresh}
                         findBest={findBest}
+                        setData={setBestData}
                       />
                     </QueryClientProvider>
                     <Circle
@@ -363,32 +369,8 @@ export default function Home() {
             />
           </BottomNavigation>
         </Box>
-        <Box className="absolute bottom-0 left-0 z-400">
-          <BarChart
-            xAxis={[
-              {
-                valueFormatter: (v, c) => {
-                  return `${v}%`;
-                },
-                tickInterval: [0, 25, 50, 75, 100],
-              },
-            ]}
-            yAxis={[{ scaleType: "band", data: ["額滿率"] }]}
-            series={[
-              { data: [25], stack: "a", color: "#2AAD27" },
-              { data: [25], stack: "a", color: "#CAC428" },
-              { data: [25], stack: "a", color: "#CB8427" },
-              { data: [25], stack: "a", color: "#CB2B3E" },
-            ]}
-            width={500}
-            height={120}
-            layout="horizontal"
-            sx={{
-              "& .MuiChartsAxis-tickLabel": {
-                fill: layer === "osm" ? "black" : "white",
-              },
-            }}
-          />
+        <Box className="absolute bottom-0 left-0 m-2 z-400">
+          <ParkingDataGrid data={bestData} />
         </Box>
       </main>
     </div>
