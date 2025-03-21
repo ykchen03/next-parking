@@ -1,8 +1,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 import { useEffect, useState } from "react";
-import { Button } from "@mui/material";
-import { Stack, Backdrop } from "@mui/material";
+import { Button, Stack, Backdrop, Alert, Snackbar, Fade } from "@mui/material";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import NearMeIcon from "@mui/icons-material/NearMe";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,9 +16,7 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
 
-const city = "hsinchu";
-
-export default React.memo(function ParkingLot({ target, m_dis, needRecharge, refresh, findBest }) {
+export default React.memo(function ParkingLot({ target, m_dis, needRecharge, refresh, findBest, setData }) {
   const [hcData, setHcData] = useState(null);
   const [prev, setPrev] = useState(null);
   const [best, setBest] = useState(null);
@@ -29,6 +26,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
   const [redDot, setRedDot] = useState(null);
   const [greyDot, setGreyDot] = useState(null);
   const [goldDot, setGoldDot] = useState(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const L = require("leaflet");
@@ -125,8 +123,8 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         return neonData;
       }
       console.log('fetchNeon',target,Date().toLocaleString());
-      const res = await fetch(`/api/neon?city=${city}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
-      //const res = await fetch("neon_test.json");
+      //const res = await fetch(`/api/neon?city=${city}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
+      const res = await fetch("neon_empty.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
       return res.json();
@@ -149,13 +147,21 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
       const id = park.name;
       const data = hcData?.find((p) => p.id === id);
       const lot = parkData?.find((p) => p.PARKNO === id);
+      const name = lot.PARKINGNAME;
       const price = data.price;
       const hasRecharge = data.recharge;
       const fullRate = (lot.TOTALQUANTITY - lot.FREEQUANTITY) / lot.TOTALQUANTITY;
-      data_find.push({ id, price, hasRecharge, fullRate, distance: park.distance });
+      data_find.push({ id, name, price, hasRecharge, fullRate, distance: park.distance });
     });
     setBest(findBestParkingLot(data_find, {needsRecharging: needRecharge}));
+    setData(best);
   }, [findBest]);
+
+  useEffect(() => {
+    if (neonData?.length === 0) {
+      setOpen(true);
+    }
+  }, [neonData]);
 
   if (parkError || neonError) {
     console.error(parkError || neonError);
@@ -171,6 +177,30 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         <CircularProgress color="inherit" />
       </Backdrop>
     );
+  }
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') 
+      return;
+    setOpen(false);
+  };
+  
+  if (neonData?.length === 0) {
+    return <Snackbar 
+      open={open} 
+      autoHideDuration={5000}
+      slots={{ transition: Fade }}
+      onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          No parking lot found
+        </Alert>
+      </Snackbar>
   }
 
   const icon = (lot) => {
