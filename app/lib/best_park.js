@@ -1,9 +1,6 @@
 export default function findBestParkingLot(parkingLots, preferences = {}) {
     const userPrefs = {
       needsRecharging: false,
-      //maxPrice: Infinity,
-      //maxFullRate: 100,
-
       weights: {
         fullRate: 0.3, 
         price: 0.1, 
@@ -11,6 +8,7 @@ export default function findBestParkingLot(parkingLots, preferences = {}) {
       },
       ...preferences
     };
+    console.log(userPrefs);
     
     const filteredLots = parkingLots.filter(lot => {
       if (userPrefs.needsRecharging && !lot.hasRecharge) return false;
@@ -33,12 +31,7 @@ export default function findBestParkingLot(parkingLots, preferences = {}) {
         (distanceScore * userPrefs.weights.distance);
       
       return {
-        id: lot.id,
-        name: lot.name,
-        fullRate: lot.fullRate,
-        price: lot.price,
-        distance: lot.distance,
-        hasRecharge: lot.hasRecharge,
+        ...lot,
         score: totalScore,
         /*scoreDetails: {
           priceScore,
