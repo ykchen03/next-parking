@@ -28,13 +28,13 @@ const Value = styled("div")({
 
 const Bar = styled("div")({
   height: "100%",
-  "&.low": {
+  "&.high": {
     backgroundColor: "#f44336",
   },
   "&.medium": {
     backgroundColor: "#efbb5aa3",
   },
-  "&.high": {
+  "&.low": {
     backgroundColor: "#088208a3",
   },
 });
@@ -70,58 +70,57 @@ export function renderProgress(params) {
   );
 }
 
-export default function ParkingDataGrid(data) {
-  /*
-    id: lot.id,
-    name: lot.name,
-    fullRate: lot.fullRate,
-    price: lot.price,
-    distance: lot.distance,
-    hasRecharge: lot.hasRecharge,
-    score: totalScore,*/
-    console.log(data.data);
+export default function ParkingDataGrid({data, setHighlight}) {
   const GridData = {
-    rows: data.data,
+    rows: data || [],
     columns: [
-      { field: "name", headerName: "名稱", flex: 1 },
+      { field: "name", headerName: "名稱",
+        headerAlign: 'center', },
       {
         field: "fullRate",
         headerName: "額滿率",
-        flex: 1,
         type: "number",
         renderCell: renderProgress,
-        /*availableAggregationFunctions: ["min", "max", "avg", "size"],*/
+        headerAlign: 'center',
       },
       {
         field: "price",
         headerName: "價格",
-        flex: 1,
         type: "number",
-        valueFormatter: (v) => {return `$${v}/H`},
+        valueFormatter: (v) => {
+          return `$${v}/H`;
+        },
+        headerAlign: 'center',
+        align: 'center',
       },
       {
         field: "distance",
         headerName: "距離",
-        flex: 1,
         type: "number",
-        valueFormatter: (v) => {`${Number(v).toFixed(2)}m`},
+        valueFormatter: (v) => {
+          return `${Number(v).toFixed(2)}m`;
+        },
+        headerAlign: 'center',
+        align: 'center',
       },
       {
         field: "hasRecharge",
         headerName: "可充電",
-        flex: 1,
         type: "boolean",
-        valueFormatter: (v) => {return (v ? "⚡" : "❌")},
+        headerAlign: 'center',
       },
       {
         field: "score",
         headerName: "分數",
-        flex: 1,
         type: "number",
-        valueFormatter: (v) => {return `${Number(v).toFixed(2)}`},
-      }
+        valueFormatter: (v) => {
+          return `${Number(v).toFixed(2)}`;
+        },
+        headerAlign: 'center',
+        align: 'center',
+      },
     ],
   };
 
-  return <DataGrid {...GridData} />;
+  return <DataGrid {...GridData} density="compact" onRowClick={(p)=> setHighlight(p.row)}/>;
 }

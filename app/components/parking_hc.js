@@ -16,16 +16,16 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
 
-export default React.memo(function ParkingLot({ target, m_dis, needRecharge, refresh, findBest, setData }) {
+export default React.memo(function ParkingLot({ target, m_dis, needRecharge, refresh, findBest, weight={}, setData }) {
   const [hcData, setHcData] = useState(null);
   const [prev, setPrev] = useState(null);
-  const [best, setBest] = useState(null);
+  //const [best, setBest] = useState(null);
   const [greenDot, setGreenDot] = useState(null);
   const [yellowDot, setYellowDot] = useState(null);
   const [orangeDot, setOrangeDot] = useState(null);
   const [redDot, setRedDot] = useState(null);
   const [greyDot, setGreyDot] = useState(null);
-  const [goldDot, setGoldDot] = useState(null);
+  //const [goldDot, setGoldDot] = useState(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         popupAnchor: [1, -34],
       })
     );
-    setGoldDot(
+    /*setGoldDot(
       L.icon({
         iconUrl:
           "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/refs/heads/master/img/marker-icon-gold.png",
@@ -83,7 +83,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
       })
-    );
+    );*/
     fetch("data/hsinchu.json")
       .then((res) => res.json())
       .then((data) => {
@@ -150,11 +150,11 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
       const name = lot.PARKINGNAME;
       const price = data.price;
       const hasRecharge = data.recharge;
-      const fullRate = (lot.TOTALQUANTITY - lot.FREEQUANTITY) / lot.TOTALQUANTITY;
-      data_find.push({ id, name, price, hasRecharge, fullRate, distance: park.distance });
+      const fullRate = 1 - (lot.FREEQUANTITY / lot.TOTALQUANTITY);
+      data_find.push({ id, name, price, hasRecharge, fullRate, distance: park.distance, position: [lot.LATITUDE, lot.LONGITUDE ] });
     });
-    const bestLots = findBestParkingLot(data_find, {needsRecharging: needRecharge});
-    setBest(bestLots[0]);
+    const bestLots = findBestParkingLot(data_find, {needsRecharging: needRecharge, weights: weight});
+    //setBest(bestLots[0]);
     setData(bestLots);
   }, [findBest]);
 
@@ -206,14 +206,14 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
 
   const icon = (lot) => {
     if (lot.TOTALQUANTITY === 0) return greyDot;
-    else if (lot.FREEQUANTITY / lot.TOTALQUANTITY > 0.75) return redDot;
-    else if (lot.FREEQUANTITY / lot.TOTALQUANTITY > 0.5) return orangeDot;
-    else if (lot.FREEQUANTITY / lot.TOTALQUANTITY > 0.25)
-      return yellowDot;
-    else return greenDot;
+    const ratio = lot.FREEQUANTITY / lot.TOTALQUANTITY;
+    return ratio > 0.75 ? greenDot 
+         : ratio > 0.5  ? yellowDot 
+         : ratio > 0.25 ? orangeDot 
+                        : redDot;
   };
   const color = (rate) => {
-    return `rgba(${255 * (1 - rate)}, ${255 * rate}, 0, 0.5)`;
+    return `rgba(${255 * (1 - rate)}, ${255 * (rate)}, 0, 0.5)`;
   };
 
   return (
@@ -222,14 +222,14 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         const lot = parkData.find((p) => p.PARKNO === park.name);
         const pData = hcData.find((p) => p.id === park.name);
         const status_color = color(
-          (lot.TOTALQUANTITY - lot.FREEQUANTITY) /
+          lot.FREEQUANTITY /
             lot.TOTALQUANTITY
         );
         return (
           <Marker
             key={index}
             position={[lot.LATITUDE, lot.LONGITUDE]}
-            icon={best?.id === park.name ? goldDot : icon(lot)}
+            icon={icon(lot)}
           >
             <Popup autoPan={false}>
               <div>
@@ -237,8 +237,8 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                 <p>{lot.ADDRESS}</p>
                 <p>費率💵:${pData.price}/H</p>
                 <p>營業時間🕒:{lot.BUSINESSHOURS}</p>
-                <p>
-                  剩餘車位🅿️:{lot.FREEQUANTITY}/{lot.TOTALQUANTITY}
+                <p className="font-bold" style={{ color: status_color }}>
+                  剩餘車位🅿️:{lot.FREEQUANTITY}
                 </p>
                 {lot.TOTALQUANTITY === 0 ? null : (
                   <Stack
@@ -257,7 +257,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                     <Gauge
                       width={100}
                       height={100}
-                      value={lot.TOTALQUANTITY - lot.FREEQUANTITY}
+                      value={lot.FREEQUANTITY}
                       valueMax={lot.TOTALQUANTITY}
                       sx={{
                         [`& .${gaugeClasses.valueArc}`]: {
