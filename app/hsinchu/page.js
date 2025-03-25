@@ -202,7 +202,7 @@ export default function Home() {
     <div>
       <main>
         <Box className="flex">
-          <AppBar position="fixed" color="inherit">
+          <AppBar position="static" color="inherit">
             <Toolbar>
               <IconButton edge="start" color="inherit" aria-label="home" href="/">
                 <HomeIcon />
@@ -217,7 +217,7 @@ export default function Home() {
             </Toolbar>
           </AppBar>
         </Box>
-        <Box className="relative mt-16">
+        <Box className="relative">
           <MapContainer
             center={[24.806805602144337, 120.9690507271121]}
             zoom={15}
