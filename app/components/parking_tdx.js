@@ -16,8 +16,8 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
 
-export default React.memo(function ParkingLot({ target, m_dis, needRecharge, refresh, findBest, weight={}, setData }) {
-  const [hcData, setHcData] = useState(null);
+export default React.memo(function ParkingLot({ city, target, m_dis, needRecharge, refresh, findBest, weight={}, setData }) {
+  const [tdxData, setTdxData] = useState(null);
   const [prev, setPrev] = useState(null);
   //const [best, setBest] = useState(null);
   const [greenDot, setGreenDot] = useState(null);
@@ -84,10 +84,10 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         popupAnchor: [1, -34],
       })
     );*/
-    fetch("data/hsinchu.json")
+    fetch(`data/${city}.json`)
       .then((res) => res.json())
       .then((data) => {
-        setHcData(data);
+        setTdxData(data);
       });
   }, []);
 
@@ -95,12 +95,12 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
     data: parkData,
     error: parkError,
     isLoading: parkLoading,
-    refetch: refetchHC,
+    refetch: refetchTDX,
   } = useQuery({
     queryKey: ["parkingLots"],
     queryFn: async () => {
-      console.log('fetchHC',Date().toLocaleString());
-      const res = await fetch("/api/hccg");
+      console.log('fetchTDX',Date().toLocaleString());
+      const res = await fetch(`/api/tdx?city=${city.charAt(0).toUpperCase() + city.slice(1)}`);
       if (!res.ok) throw new Error("Failed to fetch parking lot data");
       return res.json();
     },
@@ -123,8 +123,8 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         return neonData;
       }
       console.log('fetchNeon',target,Date().toLocaleString());
-      const res = await fetch(`/api/neon?city=${city.charAt(0).toUpperCase() + city.slice(1)}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
-      //const res = await fetch("neon_test_hc.json");
+      const res = await fetch(`/api/neon?city=${city}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
+      //const res = await fetch("neon_test_tdx.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
       return res.json();
@@ -133,25 +133,27 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
   });
 
   useEffect(() => {
-    refetchHC();
+    refetchTDX();
     refetchNeon();
   }, [refresh]);
 
   useEffect(() => {
-    if (!parkData || !neonData || !hcData) {
+    if (!parkData || !neonData || !tdxData) {
       return;
     }
     console.log('findBestParkingLot',Date().toLocaleString());
     const data_find = [];
     neonData.forEach((park) => {
       const id = park.name;
-      const data = hcData?.find((p) => p.id === id);
-      const lot = parkData?.find((p) => p.PARKNO === id);
-      const name = lot.PARKINGNAME;
+      const data = tdxData?.find((p) => p.id === id);
+      const lot = parkData.ParkingAvailabilities.find((p) => p.CarParkID === park.name);
+      const FREEQUANTITY = lot?.AvailableSpaces;
+      const TOTALQUANTITY = lot?.TotalSpaces;
+      const name = data.name;
       const price = data.price;
       const hasRecharge = data.recharge;
-      const fullRate = 1 - (lot.FREEQUANTITY / lot.TOTALQUANTITY);
-      data_find.push({ id, name, price, hasRecharge, fullRate, distance: park.distance, position: [lot.LATITUDE, lot.LONGITUDE ] });
+      const fullRate = 1 - (FREEQUANTITY / TOTALQUANTITY);
+      data_find.push({ id, name, price, hasRecharge, fullRate, distance: park.distance, position: [data.lat, data.lon ] });
     });
     const bestLots = findBestParkingLot(data_find, {needsRecharging: needRecharge, weights: weight});
     //setBest(bestLots[0]);
@@ -203,6 +205,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         </Alert>
       </Snackbar>
   }
+  console.log(neonData);
 
   const icon = (lot) => {
     if (lot.TOTALQUANTITY === 0) return greyDot;
@@ -219,35 +222,34 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
   return (
     <>
       {neonData?.map((park, index) => {
-        const lot = parkData.find((p) => p.PARKNO === park.name);
-        const pData = hcData.find((p) => p.id === park.name);
-        const status_color = color(
-          lot.FREEQUANTITY /
-            lot.TOTALQUANTITY
-        );
+        console.log(parkData);
+        const lot = parkData.ParkingAvailabilities.find((p) => p.CarParkID === park.name);
+        const FREEQUANTITY = lot?.AvailableSpaces;
+        const TOTALQUANTITY = lot?.TotalSpaces;
+        const pData = tdxData.find((p) => p.id === park.name);
+        const status_color = color(FREEQUANTITY / TOTALQUANTITY);
         return (
           <Marker
             key={index}
-            position={[lot.LATITUDE, lot.LONGITUDE]}
+            position={[pData.lat, pData.lon]}
             icon={icon(lot)}
           >
             <Popup autoPan={false}>
               <div>
-                <h2 className="text-2xl font-bold">{lot.PARKINGNAME}{pData.recharge && '⚡'}</h2>
+                <h2 className="text-2xl font-bold">{pData.name}{pData.recharge && '⚡'}</h2>
                 <p>{lot.ADDRESS}</p>
                 <p>費率💵:${pData.price}/H</p>
-                <p>營業時間🕒:{lot.BUSINESSHOURS}</p>
                 <p className="font-bold" style={{ color: status_color }}>
-                  剩餘車位🅿️:{lot.FREEQUANTITY}
+                  剩餘車位🅿️:{FREEQUANTITY}
                 </p>
-                {lot.TOTALQUANTITY === 0 ? null : (
+                {TOTALQUANTITY === 0 ? null : (
                   <Stack
                     direction={{ xs: "column", md: "row" }}
                     spacing={{ xs: 1, md: 3 }}
                   >
                     <Button
                       aria-label="google-map-route"
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${lot.LATITUDE},${lot.LONGITUDE}`}
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${pData.lat},${pData.lon}`}
                       target="_blank"
                       variant="outlined"
                       startIcon={<NearMeIcon />}
@@ -257,8 +259,8 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                     <Gauge
                       width={100}
                       height={100}
-                      value={lot.FREEQUANTITY}
-                      valueMax={lot.TOTALQUANTITY}
+                      value={FREEQUANTITY}
+                      valueMax={TOTALQUANTITY}
                       sx={{
                         [`& .${gaugeClasses.valueArc}`]: {
                           fill: status_color,
