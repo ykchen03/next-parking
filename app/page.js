@@ -45,7 +45,7 @@ export default function Home() {
                 image={item.img}
                 alt="img"
               />
-              <CardContent>
+              <CardContent className="text-center font-bold">
                 <Typography gutterBottom variant="h5" component="div">
                     {item.zh}
                 </Typography>
