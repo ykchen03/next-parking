@@ -123,7 +123,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         return neonData;
       }
       console.log('fetchNeon',target,Date().toLocaleString());
-      const res = await fetch(`/api/neon?city=${city.charAt(0).toUpperCase() + city.slice(1)}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
+      const res = await fetch(`/api/neon?city=hsinchu&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
       //const res = await fetch("neon_test_hc.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
@@ -143,7 +143,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
     }
     console.log('findBestParkingLot',Date().toLocaleString());
     const data_find = [];
-    neonData.forEach((park) => {
+    neonData.data.forEach((park) => {
       const id = park.name;
       const data = hcData?.find((p) => p.id === id);
       const lot = parkData?.find((p) => p.PARKNO === id);
@@ -159,7 +159,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
   }, [findBest]);
 
   useEffect(() => {
-    if (neonData?.length === 0) {
+    if (neonData?.data.length === 0) {
       setOpen(true);
     }
   }, [neonData]);
@@ -186,7 +186,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
     setOpen(false);
   };
   
-  if (neonData?.length === 0) {
+  if (neonData?.data.length === 0) {
     return <Snackbar 
       open={open} 
       autoHideDuration={5000}
@@ -218,7 +218,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
 
   return (
     <>
-      {neonData?.map((park, index) => {
+      {neonData?.data.map((park, index) => {
         const lot = parkData.find((p) => p.PARKNO === park.name);
         const pData = hcData.find((p) => p.id === park.name);
         const status_color = color(

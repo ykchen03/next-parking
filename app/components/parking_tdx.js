@@ -124,7 +124,8 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
       }
       console.log('fetchNeon',target,Date().toLocaleString());
       const res = await fetch(`/api/neon?city=${city}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
-      //const res = await fetch("neon_test_tdx.json");
+      //const res = await fetch(`/api/neon_debug?city=${city}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
+      //const res = await fetch("neon_test_kee.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
       return res.json();
@@ -143,7 +144,7 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
     }
     console.log('findBestParkingLot',Date().toLocaleString());
     const data_find = [];
-    neonData.forEach((park) => {
+    neonData.data.forEach((park) => {
       const id = park.name;
       const data = tdxData?.find((p) => p.id === id);
       const lot = parkData.ParkingAvailabilities.find((p) => p.CarParkID === park.name);
@@ -161,7 +162,7 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
   }, [findBest]);
 
   useEffect(() => {
-    if (neonData?.length === 0) {
+    if (neonData?.data.length === 0) {
       setOpen(true);
     }
   }, [neonData]);
@@ -188,7 +189,7 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
     setOpen(false);
   };
   
-  if (neonData?.length === 0) {
+  if (neonData?.data.length === 0) {
     return <Snackbar 
       open={open} 
       autoHideDuration={5000}
@@ -205,11 +206,11 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
         </Alert>
       </Snackbar>
   }
-  console.log(neonData);
+  //console.log(neonData);
 
-  const icon = (lot) => {
-    if (lot.TOTALQUANTITY === 0) return greyDot;
-    const ratio = lot.FREEQUANTITY / lot.TOTALQUANTITY;
+  const icon = (FREEQUANTITY,TOTALQUANTITY) => {
+    if (TOTALQUANTITY === 0) return greyDot;
+    const ratio = FREEQUANTITY / TOTALQUANTITY;
     return ratio > 0.75 ? greenDot 
          : ratio > 0.5  ? yellowDot 
          : ratio > 0.25 ? orangeDot 
@@ -221,8 +222,7 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
 
   return (
     <>
-      {neonData?.map((park, index) => {
-        console.log(parkData);
+      {neonData?.data.map((park, index) => {
         const lot = parkData.ParkingAvailabilities.find((p) => p.CarParkID === park.name);
         const FREEQUANTITY = lot?.AvailableSpaces;
         const TOTALQUANTITY = lot?.TotalSpaces;
@@ -232,7 +232,7 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
           <Marker
             key={index}
             position={[pData.lat, pData.lon]}
-            icon={icon(lot)}
+            icon={icon(FREEQUANTITY,TOTALQUANTITY)}
           >
             <Popup autoPan={false}>
               <div>
