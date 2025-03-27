@@ -238,7 +238,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                 <p>費率💵:${pData.price}/H</p>
                 <p>營業時間🕒:{lot.BUSINESSHOURS}</p>
                 <p className="font-bold" style={{ color: status_color }}>
-                  剩餘車位🅿️:{lot.FREEQUANTITY}
+                  剩餘車位🅿️:{lot.FREEQUANTITY}/{lot.TOTALQUANTITY}
                 </p>
                 {lot.TOTALQUANTITY === 0 ? null : (
                   <Stack
