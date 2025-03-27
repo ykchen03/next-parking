@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Hsinchu City Parking Lot",
-  description: "Hsinchu City Parking Lot",
+  title: "Parking Lot Finder",
+  description: "Parking Lot Finder",
 };
 
 export default function RootLayout({ children }) {
