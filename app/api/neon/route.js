@@ -18,12 +18,22 @@ export async function GET(req) {
   }
 
   try {
+    const timestamp = new Date().toISOString();
     const data = await sql(`SELECT name, distance
     FROM ( SELECT name,
     ST_Distance(location,ST_SetSRID(ST_MakePoint(${lon},${lat}), 4326)::geography)
     AS distance FROM ${city}) AS subquery
     WHERE distance <= ${radius};`);
-    return Response.json(data, { status: 200 });
+    return Response.json({
+      data,
+      timestamp,
+      meta: {
+        lat: latitude,
+        lon: longitude,
+        radius: searchRadius,
+        city
+      }
+    }, { status: 200 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
