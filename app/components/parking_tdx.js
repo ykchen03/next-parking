@@ -237,7 +237,6 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
             <Popup autoPan={false}>
               <div>
                 <h2 className="text-2xl font-bold">{pData.name}{pData.recharge && '⚡'}</h2>
-                <p>{lot.ADDRESS}</p>
                 <p>費率💵:${pData.price}/H</p>
                 <p className="font-bold" style={{ color: status_color }}>
                   剩餘車位🅿️:{FREEQUANTITY}
