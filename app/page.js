@@ -8,7 +8,6 @@ const city = [
   { en: "hsinchu", zh: "新竹市", img: "https://www.taiwan.net.tw/att/1/big_scenic_spots/pic_C100_408_12.jpg", enable: true },
   { en: "taichung", zh: "台中市", img: "https://travel.taichung.gov.tw/content/images/static/top-10/1-2.jpg", enable: true },
   { en: "changhua", zh: "彰化縣", img: "https://tourism.chcg.gov.tw/upload/27/2023103016473061787.jpg", enable: true },
-  { en: "yunlin", zh: "雲林縣", img: "https://www.taiwan.net.tw/att/1/big_scenic_spots/pic_9493_7.jpg", enable: false },
   { en: "tainan", zh: "台南市", img: "https://live.staticflickr.com/8583/15788667464_16ae4b2388_k.jpg", enable: true },
   { en: "kaohsiung", zh: "高雄市", img: "https://www.taiwan.net.tw/att/1/big_scenic_spots/pic_9351_10.jpg", enable: true },
   { en: "pingtung", zh: "屏東縣", img: "https://www.taiwan.net.tw/att/1/big_scenic_spots/pic_2112_6.jpg", enable: false },

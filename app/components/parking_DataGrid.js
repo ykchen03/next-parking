@@ -74,8 +74,13 @@ export default function ParkingDataGrid({data, setHighlight}) {
   const GridData = {
     rows: data || [],
     columns: [
-      { field: "name", headerName: "名稱",
-        headerAlign: 'center', },
+      { 
+        field: "name", 
+        headerName: "名稱",
+        headerAlign: 'center', 
+        filterable: false,
+        sortable: false,
+      },
       {
         field: "fullRate",
         headerName: "額滿率",
@@ -92,32 +97,40 @@ export default function ParkingDataGrid({data, setHighlight}) {
         },
         headerAlign: 'center',
         align: 'center',
+        flex: 1,
+        minWidth: 70,
       },
       {
         field: "distance",
         headerName: "距離",
         type: "number",
         valueFormatter: (v) => {
-          return `${Number(v).toFixed(2)}m`;
+          return `${Number(v).toFixed(0)}m`;
         },
         headerAlign: 'center',
         align: 'center',
+        flex: 1,
+        minWidth: 70,
       },
       {
         field: "hasRecharge",
         headerName: "可充電",
         type: "boolean",
-        headerAlign: 'center',
+        headerAlign: 'center', 
+        filterable: false,
+        sortable: false,
+        flex: 1,
       },
       {
         field: "score",
         headerName: "分數",
         type: "number",
         valueFormatter: (v) => {
-          return `${Number(v).toFixed(2)}`;
+          return `${Number(v).toFixed(2) * 100}`;
         },
         headerAlign: 'center',
         align: 'center',
+        flex: 1,
       },
     ],
   };

@@ -1,9 +1,13 @@
 import dynamic from "next/dynamic";
 import React from "react";
 import { useEffect, useState } from "react";
-import { Button, Stack, Backdrop, Alert, Snackbar, Fade } from "@mui/material";
+import { Button, Stack, Backdrop, Alert, Snackbar, Fade, List, ListItem, ListItemText, ListItemIcon, Box } from "@mui/material";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import NearMeIcon from "@mui/icons-material/NearMe";
+import UpdateIcon from '@mui/icons-material/Update';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import RemoveIcon from '@mui/icons-material/Remove';
 import CircularProgress from "@mui/material/CircularProgress";
 import { useQuery } from "@tanstack/react-query";
 import findBestParkingLot from "../lib/best_park";
@@ -16,16 +20,16 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
 
-export default React.memo(function ParkingLot({ target, m_dis, needRecharge, refresh, findBest, weight={}, setData }) {
+export default React.memo(function ParkingLot({ target, m_dis, needRecharge, refresh, /*findBest*/ weight={}, setData }) {
   const [hcData, setHcData] = useState(null);
   const [prev, setPrev] = useState(null);
-  //const [best, setBest] = useState(null);
+  const [future30, setFuture30] = useState({});
+  const [future60, setFuture60] = useState({});
   const [greenDot, setGreenDot] = useState(null);
   const [yellowDot, setYellowDot] = useState(null);
   const [orangeDot, setOrangeDot] = useState(null);
   const [redDot, setRedDot] = useState(null);
   const [greyDot, setGreyDot] = useState(null);
-  //const [goldDot, setGoldDot] = useState(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -75,21 +79,31 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         popupAnchor: [1, -34],
       })
     );
-    /*setGoldDot(
-      L.icon({
-        iconUrl:
-          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/refs/heads/master/img/marker-icon-gold.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-      })
-    );*/
     fetch("data/hsinchu.json")
       .then((res) => res.json())
       .then((data) => {
         setHcData(data);
       });
   }, []);
+
+  const forecast = async (id, current_ava) => {
+    try {
+      const res = await fetch(`/api/py/forecast?id=${id}&current_ava=${current_ava}`);
+      if (!res.ok) throw new Error("Failed to fetch forecast data");
+      const data = await res.json();
+      console.log(data);
+      setFuture30((prev) => ({
+        ...prev,
+        [id]: data.forecasts[0].trend,
+      }));
+      setFuture60((prev) => ({
+        ...prev,
+        [id]: data.forecasts[1].trend,
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const {
     data: parkData,
@@ -156,7 +170,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
     const bestLots = findBestParkingLot(data_find, {needsRecharging: needRecharge, weights: weight});
     //setBest(bestLots[0]);
     setData(bestLots);
-  }, [findBest]);
+  }, [neonData, parkData, needRecharge]);
 
   useEffect(() => {
     if (neonData?.data.length === 0) {
@@ -241,36 +255,71 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                   剩餘車位🅿️:{lot.FREEQUANTITY}/{lot.TOTALQUANTITY}
                 </p>
                 {lot.TOTALQUANTITY === 0 ? null : (
-                  <Stack
-                    direction={{ xs: "column", md: "row" }}
-                    spacing={{ xs: 1, md: 3 }}
-                  >
-                    <Button
-                      aria-label="google-map-route"
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${lot.LATITUDE},${lot.LONGITUDE}`}
-                      target="_blank"
-                      variant="outlined"
-                      startIcon={<NearMeIcon />}
+                  <Box className="flex flex-col gap-2">
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      spacing={{ xs: 1, md: 3 }}
                     >
-                      路線
-                    </Button>
-                    <Gauge
-                      width={100}
-                      height={100}
-                      value={lot.FREEQUANTITY}
-                      valueMax={lot.TOTALQUANTITY}
-                      sx={{
-                        [`& .${gaugeClasses.valueArc}`]: {
-                          fill: status_color,
-                        },
-                        [`& .${gaugeClasses.valueText} text`]: {
-                          fontSize: 25,
-                          fontWeight: "bold",
-                          fill: status_color,
-                        },
-                      }}
-                    />
-                  </Stack>
+                      <Button
+                        aria-label="google-map-route"
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${lot.LATITUDE},${lot.LONGITUDE}`}
+                        target="_blank"
+                        variant="outlined"
+                        startIcon={<NearMeIcon />}
+                      >
+                        路線
+                      </Button>
+                      <Gauge
+                        width={100}
+                        height={100}
+                        value={lot.FREEQUANTITY}
+                        valueMax={lot.TOTALQUANTITY}
+                        sx={{
+                          [`& .${gaugeClasses.valueArc}`]: {
+                            fill: status_color,
+                          },
+                          [`& .${gaugeClasses.valueText} text`]: {
+                            fontSize: 25,
+                            fontWeight: "bold",
+                            fill: status_color,
+                          },
+                        }}
+                      />
+                    </Stack>
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      spacing={{ xs: 1, md: 3 }}
+                    >
+                      <Button
+                        aria-label="forecast"
+                        onClick={() => forecast(lot.PARKNO, lot.FREEQUANTITY)}
+                        variant="outlined"
+                        startIcon={<UpdateIcon />}
+                      >
+                        預測
+                      </Button>
+                      {future30[lot.PARKNO] !== undefined && future60[lot.PARKNO] !== undefined && (
+                        <List dense={true}>
+                          <ListItem disablePadding>
+                            <ListItemText
+                              primary={`30分鐘後`}
+                            />
+                            <ListItemIcon>
+                              {future30[lot.PARKNO] === "fuller" ? <ArrowDropUpIcon color="error"/> : future30[lot.PARKNO] === "emptier" ? <ArrowDropDownIcon color="success"/> : <RemoveIcon/>}
+                            </ListItemIcon>
+                          </ListItem>
+                          <ListItem disablePadding>
+                            <ListItemText
+                              primary={`60分鐘後`}
+                            />
+                            <ListItemIcon>
+                              {future60[lot.PARKNO] === "fuller" ? <ArrowDropUpIcon color="error"/> : future60[lot.PARKNO] === "emptier" ? <ArrowDropDownIcon color="success"/> : <RemoveIcon/>}
+                            </ListItemIcon>
+                          </ListItem>
+                        </List>
+                      )}
+                    </Stack>
+                  </Box>
                 )}
               </div>
             </Popup>

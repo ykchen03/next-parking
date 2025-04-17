@@ -16,7 +16,7 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
 
-export default React.memo(function ParkingLot({ city, target, m_dis, needRecharge, refresh, findBest, weight={}, setData }) {
+export default React.memo(function ParkingLot({ city, target, m_dis, needRecharge, refresh, /*findBest,*/ weight={}, setData }) {
   const [tdxData, setTdxData] = useState(null);
   const [prev, setPrev] = useState(null);
   //const [best, setBest] = useState(null);
@@ -124,7 +124,6 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
       }
       console.log('fetchNeon',target,Date().toLocaleString());
       const res = await fetch(`/api/neon?city=${city}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
-      //const res = await fetch(`/api/neon_debug?city=${city}&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
       //const res = await fetch("neon_test_kee.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
@@ -159,7 +158,7 @@ export default React.memo(function ParkingLot({ city, target, m_dis, needRecharg
     const bestLots = findBestParkingLot(data_find, {needsRecharging: needRecharge, weights: weight});
     //setBest(bestLots[0]);
     setData(bestLots);
-  }, [findBest]);
+  }, [neonData, parkData, needRecharge]);
 
   useEffect(() => {
     if (neonData?.data.length === 0) {
