@@ -98,7 +98,6 @@ export default function Home() {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [needRecharge, setNeedRecharge] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [findBest, setFindBest] = useState(false);
   const [weight, setWeight] = useState({
     fullRate: 0.3,
     price: 0.1,
@@ -316,7 +315,7 @@ export default function Home() {
             <Fab
               color="secondary"
               aria-label="range"
-              onClick={() => setOpenDrawer(true)}
+              onClick={() => setOpenSlider(true)}
             >
               <TrackChangesIcon />
             </Fab>
