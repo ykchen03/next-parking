@@ -12,55 +12,7 @@ class ParkingForecaster:
 
     def load_models(self, folder_path):
         """Load trained models and scalers from disk"""
-        park_ids = [
-            4,
-            8,
-            9,
-            10,
-            20,
-            29,
-            30,
-            31,
-            46,
-            47,
-            62,
-            67,
-            71,
-            72,
-            73,
-            75,
-            76,
-            77,
-            78,
-            80,
-            81,
-            82,
-            84,
-            85,
-            86,
-            87,
-            88,
-            89,
-            90,
-            92,
-            93,
-            94,
-            95,
-            96,
-            97,
-            98,
-            99,
-            101,
-            102,
-            103,
-            104,
-            105,
-            106,
-            108,
-            109,
-            113,
-            114,
-        ]
+        park_ids = [4,8,9,10,20,29,30,31,46,47,62,67,71,72,73,75,76,77,78,80,81,82,84,85,86,87,88,89,90,92,93,94,95,96,97,98,99,101,102,103,104,105,106,108,109,113,114,]
         for park_id in park_ids:
             self.models[park_id] = joblib.load(f"{folder_path}/model_park_{park_id}.pkl")
             self.scalers[park_id] = joblib.load(f"{folder_path}/scaler_park_{park_id}.pkl")
@@ -159,7 +111,7 @@ class ParkingForecaster:
 async def lifespan(app: FastAPI):
     # Startup event
     app.state.forecaster = ParkingForecaster()
-    app.state.forecaster.load_models("./api/models")
+    app.state.forecaster.load_models("models/")
     yield
     # Shutdown event (optional cleanup)
     del app.state.forecaster
