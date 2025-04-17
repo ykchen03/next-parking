@@ -106,12 +106,13 @@ export default function Home() {
   const [dis_render, setDis_render] = useState(500);
   const [dis_find, setDis_find] = useState(500);
   const [showPark, setShowPark] = useState(false);
-  const [openDrawer, setOpenDrawer] = useState(false);
+  const [openSlider, setOpenSlider] = useState(false);
+  const [openDataGrid, setOpenDataGrid] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [needRecharge, setNeedRecharge] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [findBest, setFindBest] = useState(false);
+  /*const [findBest, setFindBest] = useState(false);*/
   const [weight, setWeight] = useState({
     fullRate: 0.3,
     price: 0.1,
@@ -261,7 +262,7 @@ export default function Home() {
                           m_dis={dis_find}
                           needRecharge={needRecharge}
                           refresh={refresh}
-                          findBest={findBest}
+                          /*findBest={findBest}*/
                           setData={setBestData}
                           weight={weight}
                         />
@@ -331,7 +332,7 @@ export default function Home() {
             <Fab
               color="secondary"
               aria-label="range"
-              onClick={() => setOpenDrawer(true)}
+              onClick={() => setOpenSlider(true)}
             >
               <TrackChangesIcon />
             </Fab>
@@ -343,9 +344,9 @@ export default function Home() {
             </Fab>
           </Box>
           <Drawer
-            open={openDrawer}
-            onClose={() => setOpenDrawer(false)}
-            anchor="bottom"
+            open={openSlider}
+            onClose={() => setOpenSlider(false)}
+            anchor="right"
             slotProps={{
               paper: {
                 sx: { backdropFilter: "blur(10px)", backgroundColor: "unset" },
@@ -354,17 +355,17 @@ export default function Home() {
             }}
           >
             <IconButton
-              className="self-end"
               color="error"
               aria-label="back"
               size="large"
-              onClick={() => setOpenDrawer(false)}
+              onClick={() => setOpenSlider(false)}
             >
               <ClearIcon />
             </IconButton>
-            <Box className="m-2 self-center" width="25%">
+            <Box className="m-2 text-center w-3xs" minHeight="50%">
               <Slider
                 aria-label="distance"
+                orientation="vertical"
                 value={dis_render / 10}
                 step={5}
                 scale={(x) => `${x * 10}m`}
@@ -467,30 +468,13 @@ export default function Home() {
               </Button>
             </DialogActions>
           </Dialog>
-          <Box
+          {/*<Box
             className="absolute bottom-0 left-1/2 transform-gpu -translate-x-1/2 m-2 p-1 z-400"
             sx={{
               "& > :not(style)": { m: 1 },
             }}
           >
-            <ToggleButton
-              className="backdrop-filter backdrop-blur"
-              color="warning"
-              aria-label="recharge"
-              value="check"
-              selected={needRecharge}
-              onClick={() => setNeedRecharge((prev) => !prev)}
-            >
-              {needRecharge ? <PowerIcon /> : <PowerOffIcon />}
-            </ToggleButton>
-            <Fab
-              color="error"
-              aria-label="find"
-              onClick={() => setFindBest((prev) => !prev)}
-            >
-              <AssistantIcon />
-            </Fab>
-          </Box>
+          </Box>*/}
           <Box className="absolute top-0 left-1/2 transform-gpu -translate-x-1/2 z-400 m-2">
             <BottomNavigation
               className="backdrop-filter backdrop-blur rounded-sm"
@@ -518,9 +502,53 @@ export default function Home() {
               />
             </BottomNavigation>
           </Box>
-          <Box className="absolute max-h-400 bottom-0 left-0 m-2 z-400 backdrop-filter backdrop-blur">
-            <ParkingDataGrid data={bestData} setHighlight={setHighlight} />
+          <Box
+            className="absolute bottom-0 left-0 m-2 p-1 z-400"
+            sx={{
+              "& > :not(style)": { m: 1 },
+            }}
+          >
+            <Fab
+              color="error"
+              aria-label="find"
+              onClick={() => setOpenDataGrid(true)}
+            >
+              <AssistantIcon />
+            </Fab>
+            <ToggleButton
+              className="backdrop-filter backdrop-blur"
+              color="warning"
+              aria-label="recharge"
+              value="check"
+              selected={needRecharge}
+              onClick={() => setNeedRecharge((prev) => !prev)}
+            >
+              {needRecharge ? <PowerIcon /> : <PowerOffIcon />}
+            </ToggleButton>
           </Box>
+          <Drawer
+            open={openDataGrid}
+            onClose={() => setOpenDataGrid(false)}
+            anchor="left"
+            slotProps={{
+              paper: {
+                sx: { backdropFilter: "blur(10px)", backgroundColor: "unset" },
+              },
+              backdrop: { sx: { backgroundColor: "unset" } },
+            }}
+          >
+            <IconButton
+              color="error"
+              aria-label="back"
+              size="large"
+              onClick={() => setOpenDataGrid(false)}
+            >
+              <ClearIcon />
+            </IconButton>
+            <Box className=/*"absolute max-h-400 bottom-0 left-0 z-400*/"m-2 backdrop-filter backdrop-blur">
+              <ParkingDataGrid data={bestData} setHighlight={setHighlight} />
+            </Box>
+          </Drawer>
         </Box>
       </main>
     </div>
