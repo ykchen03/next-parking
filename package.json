@@ -9,26 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.6",
-    "@mui/material": "^6.4.6",
-    "@mui/x-charts": "^7.28.0",
-    "@mui/x-data-grid": "^7.28.1",
-    "@neondatabase/serverless": "^0.10.4",
-    "@tanstack/react-query": "^5.68.0",
-    "leaflet": "^1.9.4",
-    "next": "^15.2.2",
-    "react": "^19.0.0-rc.1",
-    "react-dom": "^19.0.0-rc.1",
-    "react-leaflet": "^5.0.0-rc.2"
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
+    "@mui/icons-material": "latest",
+    "@mui/material": "latest",
+    "@mui/x-charts": "latest",
+    "@mui/x-data-grid": "latest",
+    "@neondatabase/serverless": "latest",
+    "@tanstack/react-query": "latest",
+    "leaflet": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-leaflet": "latest"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
-  },
-  "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
+    "@tailwindcss/postcss": "latest",
+    "tailwindcss": "latest"
   }
 }
