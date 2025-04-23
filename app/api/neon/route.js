@@ -19,11 +19,17 @@ export async function GET(req) {
 
   try {
     const timestamp = new Date().toISOString();
-    const data = await sql(`SELECT name, distance
-    FROM ( SELECT name,
-    ST_Distance(location,ST_SetSRID(ST_MakePoint(${lon},${lat}), 4326)::geography)
-    AS distance FROM ${city}) AS subquery
-    WHERE distance <= ${radius};`);
+    //const data = await sql`SELECT version()`
+    const data = await sql`
+      SELECT name, distance
+      FROM (
+        SELECT name,
+        ST_Distance(location, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography) AS distance
+        FROM ${sql.unsafe(city)}
+      ) AS subquery
+      WHERE distance <= ${searchRadius}
+    `;
+    console.log(data);
     return Response.json({
       data,
       timestamp,
