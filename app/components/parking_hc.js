@@ -88,7 +88,8 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
 
   const forecast = async (id, current_ava) => {
     try {
-      const res = await fetch(`/api/py/forecast?id=${id}&current_ava=${current_ava}`);
+      console.log('forecast',id,Date().toLocaleString());
+      const res = await fetch(`https://parking-forecast.onrender.com/api/forecast?id=${id}&current_ava=${current_ava}`);
       if (!res.ok) throw new Error("Failed to fetch forecast data");
       const data = await res.json();
       console.log(data);
@@ -137,8 +138,8 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         return neonData;
       }
       console.log('fetchNeon',target,Date().toLocaleString());
-      const res = await fetch(`/api/neon?city=hsinchu&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
-      //const res = await fetch("neon_test_hc.json");
+      //const res = await fetch(`/api/neon?city=hsinchu&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
+      const res = await fetch("neon_test_hc.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
       return res.json();
