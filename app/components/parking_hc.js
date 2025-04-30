@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 import { useEffect, useState } from "react";
-import { Button, Stack, Backdrop, Alert, Snackbar, Fade, List, ListItem, ListItemText, ListItemIcon, Box } from "@mui/material";
+import { Button, Stack, Backdrop, Alert, Snackbar, Fade, List, ListItem, ListItemText, ListItemIcon, Box, Typography } from "@mui/material";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import NearMeIcon from "@mui/icons-material/NearMe";
 import UpdateIcon from '@mui/icons-material/Update';
@@ -86,20 +86,27 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
       });
   }, []);
 
-  const forecast = async (id, current_ava) => {
+  const forecast = async (id, current_ava, total) => {
     try {
       console.log('forecast',id,Date().toLocaleString());
       const res = await fetch(`https://parking-forecast.onrender.com/api/forecast?id=${id}&current_ava=${current_ava}`);
+      //const res = await fetch(`http://localhost:10000/api/forecast?id=${id}&current_ava=${current_ava}`);
       if (!res.ok) throw new Error("Failed to fetch forecast data");
       const data = await res.json();
       console.log(data);
       setFuture30((prev) => ({
         ...prev,
-        [id]: data.forecasts[0].trend,
+        [id] :{
+          trend: data.forecasts[0].trend,
+          percent: Math.round(data.forecasts[0].absolute_change / total * 100)
+        }
       }));
       setFuture60((prev) => ({
         ...prev,
-        [id]: data.forecasts[1].trend,
+        [id] :{
+          trend: data.forecasts[1].trend,
+          percent: Math.round( data.forecasts[1].absolute_change / total * 100)
+        }
       }));
     } catch (error) {
       console.error(error);
@@ -293,7 +300,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                     >
                       <Button
                         aria-label="forecast"
-                        onClick={() => forecast(lot.PARKNO, lot.FREEQUANTITY)}
+                        onClick={() => forecast(lot.PARKNO, lot.FREEQUANTITY, lot.TOTALQUANTITY)}
                         variant="outlined"
                         startIcon={<UpdateIcon />}
                       >
@@ -303,19 +310,27 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                         <List dense={true}>
                           <ListItem disablePadding>
                             <ListItemText
-                              primary={`30分鐘後`}
+                              primary={<Typography>30分鐘後</Typography>}
                             />
                             <ListItemIcon>
-                              {future30[lot.PARKNO] === "fuller" ? <ArrowDropUpIcon color="error"/> : future30[lot.PARKNO] === "emptier" ? <ArrowDropDownIcon color="success"/> : <RemoveIcon/>}
+                              {future30[lot.PARKNO]["trend"] === "fuller" ? <ArrowDropDownIcon color="error"/> : future30[lot.PARKNO]["trend"] === "emptier" ? <ArrowDropUpIcon color="success"/> : <RemoveIcon/>}
                             </ListItemIcon>
+                            <ListItemText
+                              disableTypography
+                              primary={<Typography color={future30[lot.PARKNO]["percent"] > 0 ? "success" : future30[lot.PARKNO]["percent"] < 0 ? "error" : ""}>{future30[lot.PARKNO]["percent"]}%</Typography>}
+                            />
                           </ListItem>
                           <ListItem disablePadding>
                             <ListItemText
-                              primary={`60分鐘後`}
+                              primary={<Typography>60分鐘後</Typography>}
                             />
                             <ListItemIcon>
-                              {future60[lot.PARKNO] === "fuller" ? <ArrowDropUpIcon color="error"/> : future60[lot.PARKNO] === "emptier" ? <ArrowDropDownIcon color="success"/> : <RemoveIcon/>}
+                              {future60[lot.PARKNO]["trend"] === "fuller" ? <ArrowDropDownIcon color="error"/> : future60[lot.PARKNO]["trend"] === "emptier" ? <ArrowDropUpIcon color="success"/> : <RemoveIcon/>}
                             </ListItemIcon>
+                            <ListItemText
+                              disableTypography
+                              primary={<Typography color={future60[lot.PARKNO]["percent"] > 0 ? "success" : future60[lot.PARKNO]["percent"] < 0 ? "error" : ""}>{future60[lot.PARKNO]["percent"]}%</Typography>}
+                            />
                           </ListItem>
                         </List>
                       )}
