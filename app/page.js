@@ -23,13 +23,23 @@ export default function Home() {
       <Box className="flex">
         <AppBar position="static" color="inherit">
           <Toolbar>
+            <Box width={170} className="shrink-0"/>
             <Typography
-              className="text-center grow font-bold"
+              className="font-bold text-center grow"
               variant="h6"
               component="div"
             >
               Taiwan Parking Lot Finder
             </Typography>
+            <Box className="flex justify-end">
+              <iframe
+                src="https://ghbtns.com/github-btn.html?user=ykchen03&repo=next-parking&type=star&count=true&size=large"
+                width="170"
+                height="30"
+                title="GitHub"
+                style={{ border: "none", verticalAlign: "middle" }}
+              ></iframe>
+            </Box>
           </Toolbar>
         </AppBar>
       </Box>
