@@ -33,17 +33,19 @@ Users can customize:
 ## 🧩 Project Structure
 
 ```
-next-parking/
-├── app/                         # Main application directory (Next.js App Router)
-│   ├── api/                     # API route handlers (e.g., for authentication, data fetching)
-│   ├── lib/                     # Custom libraries and utilities
-│   ├── components/              # Reusable React components
-│   ├── hsinchu/                 # Page route for Hsinchu City
-│   ├── [city]/                  # Dynamic route for other cities
-├── public/                      # Static assets (images, icons, geojson etc.)
-├── .env.local                   # Local environment variables (not committed to Git)
-├── package.json                 # Project metadata and dependencies
-└── next.config.js               # Next.js configuration file
+📦 next-parking/
+├── app/                         # Main application directory (Next.js 15 App Router)
+│   ├── api/                     # Route handlers for APIs (e.g., auth, data fetching)
+│   ├── lib/                     # Custom libraries, utilities, and helpers
+│   ├── components/              # Shared, reusable UI components
+│   ├── hsinchu/                 # Static route for Hsinchu City's parking data
+│   ├── [city]/                  # Dynamic route for other cities (e.g., /taipei, /tainan)
+│   └── page.js                  # Root index page (homepage)
+├── public/                      # Publicly accessible static assets (e.g., icons, images, GeoJSON)
+├── .env.local                   # Environment variables (kept local, excluded from Git)
+├── package.json                 # Project manifest (scripts, dependencies, metadata)
+├── vercel.json                 # Vercel deployment configuration (rewrites, routes, etc.)
+└── next.config.js               # Custom configuration for Next.js
 ```
 
 ## 📝 License
