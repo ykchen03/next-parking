@@ -34,15 +34,16 @@ Users can customize:
 
 ```
 next-parking/
-├── components/         # Reusable React components
-├── contexts/           # React context providers
-├── lib/                # Utility functions and API connections
-├── pages/              # Next.js pages and API routes
-├── public/             # Static assets
-├── styles/             # CSS and styling files
-├── utils/              # Helper functions
-├── .env.local          # Environment variables (create this)
-└── next.config.js      # Next.js configuration
+├── app/                         # Main application directory (Next.js App Router)
+│   ├── api/                     # API route handlers (e.g., for authentication, data fetching)
+│   ├── lib/                     # Custom libraries and utilities
+│   ├── components/              # Reusable React components
+│   ├── hsinchu/                 # Page route for Hsinchu City
+│   ├── [city]/                  # Dynamic route for other cities
+├── public/                      # Static assets (images, icons, geojson etc.)
+├── .env.local                   # Local environment variables (not committed to Git)
+├── package.json                 # Project metadata and dependencies
+└── next.config.js               # Next.js configuration file
 ```
 
 ## 📝 License
