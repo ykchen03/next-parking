@@ -1,5 +1,6 @@
 "use client";
-import { Box, AppBar, Toolbar, Typography, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
+import { Box, Typography, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
+import Header from "./components/Header";
 
 const city = [
   { en: "keelung", zh: "基隆市", img: "https://tour.klcg.gov.tw/media/klcgtour/attractions/6263832/21eb35e5-a706-4ada-baac-3278753cfea7.jpg", enable: true },
@@ -20,32 +21,10 @@ const city = [
 export default function Home() {
   return (
     <div>
-      <Box className="flex">
-        <AppBar position="static" color="inherit">
-          <Toolbar>
-            <Box width={170} className="shrink-0"/>
-            <Typography
-              className="font-bold text-center grow"
-              variant="h6"
-              component="div"
-            >
-              Taiwan Parking Lot Finder
-            </Typography>
-            <Box className="flex justify-end">
-              <iframe
-                src="https://ghbtns.com/github-btn.html?user=ykchen03&repo=next-parking&type=star&count=true&size=large"
-                width="170"
-                height="30"
-                title="GitHub"
-                style={{ border: "none", verticalAlign: "middle" }}
-              ></iframe>
-            </Box>
-          </Toolbar>
-        </AppBar>
-      </Box>
+      <Header title="台灣停車資訊" />
       <Box className="flex justify-center flex-wrap m-3">
         {city.map((item, index) => (
-            <Card className={`m-2 max-w-xs ${!item.enable ? "opacity-50" : ""}`} key={index}>
+          <Card className={`m-2 max-w-xs ${!item.enable ? "opacity-50" : ""}`} key={index}>
             <CardActionArea 
             disabled={!item.enable}
             onClick={() => item.enable ? window.location.href = `/${item.en}` : null}>
