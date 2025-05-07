@@ -21,9 +21,6 @@ import {
   Button,
   List,
   ListItem,
-  AppBar,
-  Toolbar,
-  Typography,
 } from "@mui/material";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
@@ -35,11 +32,11 @@ import PowerIcon from "@mui/icons-material/Power";
 import PowerOffIcon from "@mui/icons-material/PowerOff";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import ScaleIcon from "@mui/icons-material/Scale";
-import HomeIcon from "@mui/icons-material/Home";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ParkingLot from "../components/parking_tdx";
 import ParkingDataGrid from "../components/parking_DataGrid";
 import "leaflet/dist/leaflet.css";
+import Header from "../components/Header";
 
 const Init_Position = {
     keelung: [25.13199763262815, 121.74444747496243],
@@ -216,22 +213,7 @@ export default function Home() {
   return (
     <div>
       <main>
-        <Box className="flex">
-          <AppBar position="static" color="inherit">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="home" href="/">
-                <HomeIcon />
-              </IconButton>
-              <Typography
-                className="text-center grow"
-                variant="h6"
-                component="div"
-              >
-                {city.charAt(0).toUpperCase() + city.slice(1)} Parking Lot Finder
-              </Typography>
-            </Toolbar>
-          </AppBar>
-        </Box>
+        <Header title={city.charAt(0).toUpperCase() + city.slice(1) + " Parking lot"} />
         <Box className="relative">
           <MapContainer
             center={Init_Position[city]}
