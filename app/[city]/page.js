@@ -32,11 +32,14 @@ import PowerIcon from "@mui/icons-material/Power";
 import PowerOffIcon from "@mui/icons-material/PowerOff";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import ScaleIcon from "@mui/icons-material/Scale";
+import CloseIcon from '@mui/icons-material/Close';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ParkingLot from "../components/parking_tdx";
 import ParkingDataGrid from "../components/parking_DataGrid";
 import "leaflet/dist/leaflet.css";
 import Header from "../components/Header";
+import WheaterCard from "../components/WheaterCard";
 
 const Init_Position = {
     keelung: [25.13199763262815, 121.74444747496243],
@@ -105,7 +108,8 @@ export default function Home() {
   const [showPark, setShowPark] = useState(false);
   const [openSlider, setOpenSlider] = useState(false);
   const [openDataGrid, setOpenDataGrid] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openEditor, setOpenEditor] = useState(false);
+  const [openWheater, setOpenWheater] = useState(false);
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [needRecharge, setNeedRecharge] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -305,9 +309,16 @@ export default function Home() {
             }}
           >
             <Fab
+              color="warning"
+              aria-label="weather"
+              onClick={() => setOpenWheater(true)}
+            >
+              <ThermostatIcon />
+            </Fab>
+            <Fab
               aria-label="dialog"
               color="info"
-              onClick={() => setOpenDialog(true)}
+              onClick={() => setOpenEditor(true)}
             >
               <ScaleIcon />
             </Fab>
@@ -370,10 +381,10 @@ export default function Home() {
           </Drawer>
           <Dialog
             onClose={() => {
-              setOpenDialog(false);
+              setOpenEditor(false);
               setWeightTmp(weight);
             }}
-            open={openDialog}
+            open={openEditor}
           >
             <DialogTitle>Weight</DialogTitle>
             <DialogContent>
@@ -425,7 +436,7 @@ export default function Home() {
             <DialogActions>
               <Button
                 onClick={() => {
-                  setOpenDialog(false);
+                  setOpenEditor(false);
                   setWeightTmp({ ...weight });
                 }}
               >
@@ -439,7 +450,7 @@ export default function Home() {
                       weightTmp.distance ===
                     1
                   ) {
-                    setOpenDialog(false);
+                    setOpenEditor(false);
                     setWeight({ ...weightTmp });
                   } else {
                     alert("The sum of weights should be 1.");
@@ -450,13 +461,23 @@ export default function Home() {
               </Button>
             </DialogActions>
           </Dialog>
-          {/*<Box
-            className="absolute bottom-0 left-1/2 transform-gpu -translate-x-1/2 m-2 p-1 z-400"
-            sx={{
-              "& > :not(style)": { m: 1 },
-            }}
-          >
-          </Box>*/}
+          <Dialog onClose={() => setOpenWheater(false)} open={openWheater}>
+            <IconButton
+              aria-label="close"
+              onClick={() => setOpenWheater(false)}
+              sx={(theme) => ({
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: theme.palette.grey[500],
+              })}
+            >
+              <CloseIcon />
+            </IconButton>
+            <DialogContent>
+              <WheaterCard city={city} />
+            </DialogContent>
+          </Dialog>
           <Box className="absolute top-0 left-1/2 transform-gpu -translate-x-1/2 z-400 m-2">
             <BottomNavigation
               className="backdrop-filter backdrop-blur rounded-sm"
