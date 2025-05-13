@@ -89,23 +89,24 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
   const forecast = async (id, current_ava, total) => {
     try {
       console.log('forecast',id,Date().toLocaleString());
-      const res = await fetch(`https://parking-forecast.onrender.com/api/forecast?id=${id}&current_ava=${current_ava}`);
-      //const res = await fetch(`http://localhost:10000/api/forecast?id=${id}&current_ava=${current_ava}`);
+      const res = await fetch(
+        (process.env.NODE_ENV === 'production' ? 'https://parking-forecast.onrender.com' : 'http://localhost:10000') 
+        +`/api/forecast?park_id=${id}&current_free_spaces=${current_ava}`);
       if (!res.ok) throw new Error("Failed to fetch forecast data");
       const data = await res.json();
       console.log(data);
       setFuture30((prev) => ({
         ...prev,
         [id] :{
-          trend: data.forecasts[0].trend,
-          percent: Math.round(data.forecasts[0].absolute_change / total * 100)
+          trend: data.trend30,
+          percent: Math.round(data.change30 / total * 100)
         }
       }));
       setFuture60((prev) => ({
         ...prev,
         [id] :{
-          trend: data.forecasts[1].trend,
-          percent: Math.round( data.forecasts[1].absolute_change / total * 100)
+          trend: data.trend60,
+          percent: Math.round( data.change60 / total * 100)
         }
       }));
     } catch (error) {
@@ -145,8 +146,7 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
         return neonData;
       }
       console.log('fetchNeon',target,Date().toLocaleString());
-      const res = await fetch(`/api/neon?city=hsinchu&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}`);
-      //const res = await fetch("neon_test_hc.json");
+      const res = await fetch(process.env.NODE_ENV === 'production' ? `/api/neon?city=hsinchu&lon=${target[1]}&lat=${target[0]}&radius=${m_dis}` : "neon_test_hc.json");
       if (!res.ok) throw new Error("Failed to fetch database data");
       setPrev({ lat: target[0], lon: target[1], dis: m_dis });
       return res.json();
@@ -310,26 +310,26 @@ export default React.memo(function ParkingLot({ target, m_dis, needRecharge, ref
                         <List dense={true}>
                           <ListItem disablePadding>
                             <ListItemText
-                              primary={<Typography>30分鐘後</Typography>}
+                              primary={<Typography className="m-0!">30分鐘後</Typography>}
                             />
                             <ListItemIcon>
                               {future30[lot.PARKNO]["trend"] === "fuller" ? <ArrowDropDownIcon color="error"/> : future30[lot.PARKNO]["trend"] === "emptier" ? <ArrowDropUpIcon color="success"/> : <RemoveIcon/>}
                             </ListItemIcon>
                             <ListItemText
                               disableTypography
-                              primary={<Typography color={future30[lot.PARKNO]["percent"] > 0 ? "success" : future30[lot.PARKNO]["percent"] < 0 ? "error" : ""}>{future30[lot.PARKNO]["percent"]}%</Typography>}
+                              primary={<Typography className="m-0!" color={future30[lot.PARKNO]["percent"] > 0 ? "success" : future30[lot.PARKNO]["percent"] < 0 ? "error" : ""}>{future30[lot.PARKNO]["percent"]}%</Typography>}
                             />
                           </ListItem>
                           <ListItem disablePadding>
                             <ListItemText
-                              primary={<Typography>60分鐘後</Typography>}
+                              primary={<Typography className="m-0!">60分鐘後</Typography>}
                             />
                             <ListItemIcon>
                               {future60[lot.PARKNO]["trend"] === "fuller" ? <ArrowDropDownIcon color="error"/> : future60[lot.PARKNO]["trend"] === "emptier" ? <ArrowDropUpIcon color="success"/> : <RemoveIcon/>}
                             </ListItemIcon>
                             <ListItemText
                               disableTypography
-                              primary={<Typography color={future60[lot.PARKNO]["percent"] > 0 ? "success" : future60[lot.PARKNO]["percent"] < 0 ? "error" : ""}>{future60[lot.PARKNO]["percent"]}%</Typography>}
+                              primary={<Typography className="m-0!" color={future60[lot.PARKNO]["percent"] > 0 ? "success" : future60[lot.PARKNO]["percent"] < 0 ? "error" : ""}>{future60[lot.PARKNO]["percent"]}%</Typography>}
                             />
                           </ListItem>
                         </List>
