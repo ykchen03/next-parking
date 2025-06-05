@@ -3,7 +3,6 @@ import { Box, Typography, Card, CardActionArea, CardMedia, CardContent } from "@
 import Header from "./components/Header";
 
 const city = [
-  {en: "assistant", zh: "停車助手", img: "https://www.taiwan.net.tw/att/1/big_scenic_spots/pic_9351_10.jpg", enable: true},
   { en: "keelung", zh: "基隆市", img: "https://tour.klcg.gov.tw/media/klcgtour/attractions/6263832/21eb35e5-a706-4ada-baac-3278753cfea7.jpg", enable: true },
   { en: "taipei", zh: "台北市", img: "https://www.taiwan.net.tw/att/1/big_scenic_spots/pic_A12-00170_11.jpg", enable: true },
   { en: "taoyuan", zh: "桃園市", img: "https://travel.tycg.gov.tw/content/images/district/city-banner.jpg", enable: true },

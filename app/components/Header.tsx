@@ -1,5 +1,6 @@
 import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import React from "react";
 
 interface HeaderProps {
@@ -10,11 +11,13 @@ export default function Header({ title }: HeaderProps): React.JSX.Element {
   return (
     <Box className="flex">
       <AppBar position="static" color="inherit">
-        <Toolbar>
+        <Toolbar className="flex justify-between items-center gap-5">
           <IconButton edge="start" color="inherit" aria-label="home" href="/">
             <HomeIcon />
           </IconButton>
-          <Box width={170} className="shrink-0" />
+          <IconButton edge="start" color="inherit" aria-label="assistant" href="/assistant">
+            <SmartToyIcon />
+          </IconButton>
           <Typography
             className="font-bold text-center grow"
             variant="h6"
