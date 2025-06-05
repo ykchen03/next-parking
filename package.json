@@ -9,22 +9,30 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "latest",
-    "@emotion/styled": "latest",
-    "@mui/icons-material": "latest",
-    "@mui/material": "latest",
-    "@mui/x-charts": "latest",
-    "@mui/x-data-grid": "latest",
-    "@neondatabase/serverless": "latest",
-    "@tanstack/react-query": "latest",
-    "leaflet": "latest",
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-leaflet": "latest"
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "latest",
-    "tailwindcss": "latest"
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react-leaflet": "^5.0.0",
+    "@emotion/react": "^11.0.0",
+    "@emotion/styled": "^11.0.0",
+    "@mui/icons-material": "^7.0.0",
+    "@mui/material": "^7.0.0",
+    "@mui/x-charts": "^8.0.0",
+    "@mui/x-data-grid": "^8.0.0",
+    "@neondatabase/serverless": "^1.0.0",
+    "leaflet": "^1.9.0",
+    "typescript": "^5.0.0",
+    "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^15.6.0",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.0",
+    "openai": "^4.0.0"
   }
 }
