@@ -92,7 +92,10 @@ async function location_search(
   }
 }
 
-async function address_geocoding(lat: number, lon: number): Promise<LocationResult[]> {
+async function address_geocoding(
+  lat: number,
+  lon: number
+): Promise<LocationResult[]> {
   try {
     const result = await fetch(
       `api/location/search?lat=${lat}&lon=${lon}`
@@ -111,8 +114,7 @@ async function address_geocoding(lat: number, lon: number): Promise<LocationResu
         address: result[0].display_name || "",
       },
     ];
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error in address_geocoding:", error);
     throw error;
   }
@@ -187,7 +189,13 @@ async function parking_lots_finder(args: ParkingLotsFinderArgs): Promise<any> {
 //Please found the parking lots around Taipei 101 about 500 meters
 //請找出台北101附近500公尺內的停車場
 
-export default async function ParkFinder(userPrompt: string, gpsLocation?: any): Promise<any> {
+export default async function ParkFinder(
+  userPrompt: string,
+  gpsLocation: {
+    latitude: number;
+    longitude: number;
+  } | null
+): Promise<any> {
   const FUNCTION_SCHEMA = await fetch("data/function_schema.json").then((res) =>
     res.json()
   );
@@ -252,8 +260,9 @@ Data is below:`,
   ];
   let callReturn: string = "";
   let response: any;
+  console.log("GPS Location:", gpsLocation);
 
-  if (gpsLocation) {
+  if (gpsLocation !== null) {
     const address = await address_geocoding(
       gpsLocation.latitude,
       gpsLocation.longitude
