@@ -30,7 +30,7 @@ export default function ReAppBar(): React.JSX.Element {
               textDecoration: "none",
             }}
           >
-            Parking Assistant
+            Assistant
           </Typography>
         </Toolbar>
       </Container>

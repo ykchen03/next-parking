@@ -210,7 +210,7 @@ export default React.memo(function ParkingLot({
       }
     };
     fetchData();
-  }, [refresh, target, m_dis, city, prev?.lat, prev?.lon, prev?.dis, neonData]);
+  }, [refresh, target, m_dis]);
 
   useEffect(() => {
     if (!parkData || !neonData || !tdxData) {
